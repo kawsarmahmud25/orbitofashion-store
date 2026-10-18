@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>অ্যাডমিন প্যানেল — ORBITO FASHION</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23e11d48'/%3E%3Ctext x='32' y='44' font-size='36' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'%3EO%3C/text%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/admin.css?v=1.0">
+</head>
+<body>
+
+  <!-- ===== Login ===== -->
+  <div class="login-wrap" id="loginView">
+    <form class="login-card" id="loginForm" autocomplete="off">
+      <div class="login-logo">ORBITO<span style="color:#e11d48">.</span></div>
+      <p class="login-sub">অ্যাডমিন প্যানেলে স্বাগতম</p>
+      <label class="field">পাসওয়ার্ড
+        <input type="password" id="loginPass" placeholder="অ্যাডমিন পাসওয়ার্ড" autocomplete="current-password">
+      </label>
+      <p class="form-err" id="loginErr" role="alert" hidden></p>
+      <button type="submit" class="btn-primary" id="loginBtn">লগইন করুন</button>
+      <a href="/" class="back-link"><i class="fa-solid fa-arrow-right"></i> সাইটে ফিরে যান</a>
+    </form>
+  </div>
+
+  <!-- ===== App ===== -->
+  <div class="admin-app" id="adminApp" hidden>
+    <header class="admin-header">
+      <button class="icon-btn menu-toggle" id="adminMenuBtn" aria-label="মেনু"><i class="fa-solid fa-bars"></i></button>
+      <span class="admin-brand">ORBITO <span class="admin-tag">অ্যাডমিন</span></span>
+      <div class="admin-head-right">
+        <a href="/" target="_blank" class="head-link" title="সাইট দেখুন"><i class="fa-solid fa-eye"></i><span class="hide-sm">সাইট</span></a>
+        <button class="head-link danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i><span class="hide-sm">লগআউট</span></button>
+      </div>
+    </header>
+
+    <div class="admin-body">
+      <nav class="sidebar" id="sidebar" aria-label="অ্যাডমিন মেনু">
+        <button class="tab-btn active" data-tab="dashboard"><i class="fa-solid fa-gauge-high"></i> ড্যাশবোর্ড</button>
+        <button class="tab-btn" data-tab="products"><i class="fa-solid fa-shirt"></i> পণ্য</button>
+        <button class="tab-btn" data-tab="categories"><i class="fa-solid fa-tags"></i> ক্যাটাগরি</button>
+        <button class="tab-btn" data-tab="sliders"><i class="fa-solid fa-images"></i> স্লাইডার</button>
+        <button class="tab-btn" data-tab="orders"><i class="fa-solid fa-box-open"></i> অর্ডার <span class="pill" id="pendingPill" hidden></span></button>
+        <button class="tab-btn" data-tab="settings"><i class="fa-solid fa-gear"></i> সেটিংস</button>
+      </nav>
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+      <main class="content">
+        <!-- Dashboard -->
+        <section class="tab-pane active" id="tab-dashboard">
+          <h2 class="page-title">ড্যাশবোর্ড</h2>
+          <div class="stat-grid" id="statGrid"></div>
+          <div class="panel">
+            <h3 class="panel-title">সাম্প্রতিক অর্ডার</h3>
+            <div class="table-wrap"><table class="tbl" id="recentOrdersTbl"></table></div>
+          </div>
+        </section>
+
+        <!-- Products -->
+        <section class="tab-pane" id="tab-products">
+          <div class="page-head">
+            <h2 class="page-title">পণ্য তালিকা</h2>
+            <button class="btn-primary sm" id="addProductBtn"><i class="fa-solid fa-plus"></i> নতুন পণ্য</button>
+          </div>
+          <div class="table-wrap"><table class="tbl" id="productsTbl"></table></div>
+        </section>
+
+        <!-- Categories -->
+        <section class="tab-pane" id="tab-categories">
+          <div class="page-head">
+            <h2 class="page-title">ক্যাটাগরি</h2>
+            <button class="btn-primary sm" id="addCatBtn"><i class="fa-solid fa-plus"></i> নতুন ক্যাটাগরি</button>
+          </div>
+          <div class="table-wrap"><table class="tbl" id="catsTbl"></table></div>
+        </section>
+
+        <!-- Sliders -->
+        <section class="tab-pane" id="tab-sliders">
+          <div class="page-head">
+            <h2 class="page-title">হোম স্লাইডার</h2>
+            <button class="btn-primary sm" id="addSliderBtn"><i class="fa-solid fa-plus"></i> নতুন স্লাইড</button>
+          </div>
+          <div class="table-wrap"><table class="tbl" id="slidersTbl"></table></div>
+        </section>
+
+        <!-- Orders -->
+        <section class="tab-pane" id="tab-orders">
+          <div class="page-head">
+            <h2 class="page-title">অর্ডারসমূহ</h2>
+            <select id="orderStatusFilter" class="input sm" aria-label="স্ট্যাটাস ফিল্টার">
+              <option value="">সব স্ট্যাটাস</option>
+              <option value="pending">পেন্ডিং</option>
+              <option value="confirmed">কনফার্মড</option>
+              <option value="shipped">শিপড</option>
+              <option value="delivered">ডেলিভার্ড</option>
+              <option value="cancelled">বাতিল</option>
+            </select>
+          </div>
+          <div class="table-wrap"><table class="tbl" id="ordersTbl"></table></div>
+        </section>
+
+        <!-- Settings -->
+        <section class="tab-pane" id="tab-settings">
+          <h2 class="page-title">সাইট সেটিংস</h2>
+          <form class="panel form-panel" id="settingsForm">
+            <label class="field">ব্র্যান্ড নাম<input class="input" id="set_brand_name" maxlength="60"></label>
+            <label class="field">হোয়াটসঅ্যাপ নম্বর <small>(8801XXXXXXXXX ফরম্যাটে)</small><input class="input" id="set_whatsapp_number" maxlength="15" inputmode="numeric"></label>
+            <label class="field">হেল্পলাইন<input class="input" id="set_helpline" maxlength="60"></label>
+            <label class="field">ঠিকানা<textarea class="input" id="set_address" rows="2" maxlength="300"></textarea></label>
+            <div class="form-row">
+              <label class="field">ডেলিভারি চার্জ — ঢাকার ভিতরে (৳)<input class="input" id="set_delivery_inside" type="number" min="0" max="10000"></label>
+              <label class="field">ডেলিভারি চার্জ — ঢাকার বাইরে (৳)<input class="input" id="set_delivery_outside" type="number" min="0" max="10000"></label>
+            </div>
+            <p class="form-err" id="setErr" role="alert" hidden></p>
+            <p class="form-ok" id="setOk" role="status" hidden></p>
+            <button type="submit" class="btn-primary sm" id="setSaveBtn">সংরক্ষণ করুন</button>
+          </form>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ===== Generic edit modal ===== -->
+  <div class="modal-wrap" id="editModal" hidden>
+    <div class="modal-overlay" data-close-edit></div>
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-x icon-btn" data-close-edit aria-label="বন্ধ করুন"><i class="fa-solid fa-xmark"></i></button>
+      <h2 class="modal-title" id="editTitle"></h2>
+      <form id="editForm" novalidate>
+        <div id="editFields"></div>
+        <p class="form-err" id="editErr" role="alert" hidden></p>
+        <button type="submit" class="btn-primary" id="editSaveBtn">সংরক্ষণ করুন</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Order detail modal ===== -->
+  <div class="modal-wrap" id="orderModal" hidden>
+    <div class="modal-overlay" data-close-order></div>
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-x icon-btn" data-close-order aria-label="বন্ধ করুন"><i class="fa-solid fa-xmark"></i></button>
+      <h2 class="modal-title">অর্ডার বিবরণ</h2>
+      <div id="orderDetail"></div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+  <script src="/admin.js?v=1.0" defer></script>
+</body>
+</html>

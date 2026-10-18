@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>অ্যাডমিন পাসওয়ার্ড Hash বানান — ORBITO FASHION</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Hind Siliguri',system-ui,sans-serif;background:#fdf2f8;color:#111827;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;line-height:1.7}
+  .card{background:#fff;border-radius:18px;box-shadow:0 12px 40px rgba(225,29,72,.12);padding:32px 28px;width:100%;max-width:560px}
+  h1{font-size:22px;text-align:center;margin-bottom:6px}
+  h1 span{color:#e11d48}
+  .sub{text-align:center;color:#6b7280;font-size:14px;margin-bottom:24px}
+  label{display:block;font-weight:600;font-size:14px;margin-bottom:14px}
+  input{display:block;width:100%;margin-top:6px;border:1.5px solid #e5e7eb;border-radius:10px;padding:11px 13px;font-size:15px;font-family:inherit}
+  input:focus{outline:none;border-color:#e11d48}
+  .row{display:flex;gap:10px}
+  .row input{flex:1}
+  .btn{background:#e11d48;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+  .btn:hover{background:#be123c}
+  .btn.ghost{background:#f3f4f6;color:#111827}
+  .btn.big{width:100%;margin-top:6px;padding:14px;font-size:16px}
+  .out{margin-top:22px;display:none}
+  .out.show{display:block}
+  .kv{background:#f9fafb;border:1px dashed #d1d5db;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+  .kv .k{font-size:12px;color:#6b7280;font-weight:600;letter-spacing:.05em}
+  .kv .v{font-family:monospace;font-size:13px;word-break:break-all;margin:4px 0 8px}
+  .kv button{font-size:13px}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:13px;margin-top:18px;color:#92400e}
+  .warn{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 14px;font-size:13px;margin-top:12px;color:#991b1b}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>ORBITO<span>.</span> অ্যাডমিন Hash টুল</h1>
+  <p class="sub">এই পেজ সম্পূর্ণ আপনার ব্রাউজারে চলে — পাসওয়ার্ড কোথাও পাঠানো হয় না।</p>
+
+  <label>১. Salt (গোপন লবণ)
+    <div class="row">
+      <input type="text" id="salt" placeholder="Salt লিখুন বা তৈরি করুন" autocomplete="off">
+      <button class="btn ghost" id="genSalt" type="button">তৈরি করুন</button>
+    </div>
+  </label>
+
+  <label>২. অ্যাডমিন পাসওয়ার্ড
+    <input type="password" id="pw1" placeholder="শক্তিশালী পাসওয়ার্ড দিন" autocomplete="new-password">
+  </label>
+
+  <label>৩. পাসওয়ার্ড আবার দিন
+    <input type="password" id="pw2" placeholder="একই পাসওয়ার্ড আবার" autocomplete="new-password">
+  </label>
+
+  <button class="btn big" id="make">Hash বানান</button>
+  <p id="err" style="color:#dc2626;font-size:14px;margin-top:10px;display:none"></p>
+
+  <div class="out" id="out">
+    <div class="kv">
+      <div class="k">ADMIN_SALT</div>
+      <div class="v" id="outSalt"></div>
+      <button class="btn ghost" data-copy="outSalt" type="button">কপি করুন</button>
+    </div>
+    <div class="kv">
+      <div class="k">ADMIN_PASSWORD_HASH</div>
+      <div class="v" id="outHash"></div>
+      <button class="btn ghost" data-copy="outHash" type="button">কপি করুন</button>
+    </div>
+    <div class="note">👆 এই দুটো মান Cloudflare Pages → <b>Settings → Environment variables</b> → <b>Production</b>-এ যোগ করে <b>Redeploy</b> করুন।</div>
+    <div class="warn">⚠️ পাসওয়ার্ড ও Salt কাউকে দেবেন না, কোথাও সেভ করে রাখবেন না। এই ট্যাব বন্ধ করে দিন।</div>
+  </div>
+</div>
+
+<script>
+function randSalt(){
+  var a = crypto.getRandomValues(new Uint8Array(16));
+  return Array.from(a).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+}
+document.getElementById('genSalt').addEventListener('click', function(){
+  document.getElementById('salt').value = randSalt();
+});
+document.querySelectorAll('[data-copy]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var t = document.getElementById(b.getAttribute('data-copy')).textContent;
+    navigator.clipboard.writeText(t).then(function(){ b.textContent = 'কপি হয়েছে ✓'; setTimeout(function(){ b.textContent = 'কপি করুন'; }, 1500); });
+  });
+});
+document.getElementById('make').addEventListener('click', async function(){
+  var salt = document.getElementById('salt').value.trim();
+  var p1 = document.getElementById('pw1').value;
+  var p2 = document.getElementById('pw2').value;
+  var err = document.getElementById('err');
+  err.style.display = 'none';
+  if (!salt) { err.textContent = 'Salt দিন বা "তৈরি করুন" চাপুন।'; err.style.display = 'block'; return; }
+  if (p1.length < 8) { err.textContent = 'পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে।'; err.style.display = 'block'; return; }
+  if (p1 !== p2) { err.textContent = 'দুটি পাসওয়ার্ড মিলছে না।'; err.style.display = 'block'; return; }
+  // সার্ভারের মতোই: SHA-256(salt + password)
+  var digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + p1));
+  var hex = Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+  document.getElementById('outSalt').textContent = salt;
+  document.getElementById('outHash').textContent = hex;
+  document.getElementById('out').classList.add('show');
+  document.getElementById('pw1').value = '';
+  document.getElementById('pw2').value = '';
+});
+</script>
+</body>
+</html>
